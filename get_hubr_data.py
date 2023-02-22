@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 link = sys.argv[1]
+base_link = link + 'page'
 
 def get_page(link):
     url = link
@@ -34,10 +35,17 @@ def get_count_of_pages(main_page):
     logger.info(f'Got last page {last_page}')
     return last_page
 
-
+def build_pages_links(count_of_pages, base_link):
+    articles_links = []
+    for el in range(int(count_of_pages)):
+        el = el + 1
+        article_link = base_link + str(el)
+        articles_links.append(article_link)
+    return articles_links
 
 main_page = get_page(link)
 count_of_pages = get_count_of_pages(main_page)
+print(build_pages_links(count_of_pages, base_link))
 
 
 
