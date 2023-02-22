@@ -5,6 +5,12 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import sys
 import re
+import logging
+
+logging.basicConfig(level=logging.DEBUG, filename='get_hubr_data.log',
+                    format='%(asctime)s %(name)s %(levelname)s:%(message)s')
+logger = logging.getLogger(__name__)
+
 
 link = sys.argv[1]
 
@@ -14,6 +20,7 @@ def get_page(link):
     retries = Retry(total=5, backoff_factor=1, status_forcelist=[ 502, 503, 504 ])
     s.mount('https://', HTTPAdapter(max_retries=retries))
     page = s.get(url)
+    logger.info('Got page data')
     return page.text
 
 def get_count_of_pages(main_page):
@@ -24,6 +31,7 @@ def get_count_of_pages(main_page):
     numer_pages = hub_links.findAll('a')
     last_page = numer_pages[-1].text
     last_page = [line for line in last_page.split('\n') if line.strip() != ''][0].strip()
+    logger.info(f'Got last page {last_page}')
     return last_page
 
 
