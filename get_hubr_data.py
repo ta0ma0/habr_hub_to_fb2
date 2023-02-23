@@ -6,6 +6,9 @@ from urllib3.util.retry import Retry
 import sys
 import re
 import logging
+import json
+from os.path import exists
+
 
 logging.basicConfig(level=logging.DEBUG, filename='get_hubr_data.log',
                     format='%(asctime)s %(name)s %(levelname)s:%(message)s')
@@ -36,16 +39,52 @@ def get_count_of_pages(main_page):
     return last_page
 
 def build_pages_links(count_of_pages, base_link):
-    articles_links = []
+    """Build list links to all pages with articles"""
+    pages_links = []
     for el in range(int(count_of_pages)):
         el = el + 1
-        article_link = base_link + str(el)
-        articles_links.append(article_link)
-    return articles_links
+        page_link = base_link + str(el)
+        pages_links.append(page_link)
+    return pages_links
+
+def save_page(page, sequence):
+    file_name = 'page_data/' + str(sequence) + '_page_data.json'
+    if exists(file_name):
+        exist_question = 'y'
+        exist_question = input('File is exist, continue download y/n: ')
+        if exist_question == 'y':
+            with open(file_name, 'w') as f:
+                f.write(json.dumps(page))
+                logger.info(f'{sequence}_page_data.json page saved')
+        elif exist_question == 'n':
+            return False
+    else:
+        with open(file_name, 'w') as f:
+                f.write(json.dumps(page))
+                logger.info(f'{sequence}_page_data.json page saved')
+
+
+def read_page(sequence, file_postfix):
+    with open(f'{sequence}{file_postfix}') as f:
+        page_data = json.loads(f.read())
+    return page_data
+
+def get_article_links(page_link):
+    pass
+
+def save_article(link):
+    pass
 
 main_page = get_page(link)
 count_of_pages = get_count_of_pages(main_page)
-print(build_pages_links(count_of_pages, base_link))
+page_links = build_pages_links(count_of_pages, base_link)
+
+for el in range(int(count_of_pages)):
+    sequence = el + 1
+    page = get_page(page_links[el])
+    save_process = save_page(page, sequence)
+    if save_process == False:
+        break
 
 
 
