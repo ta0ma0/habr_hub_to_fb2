@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 link = sys.argv[1]
 base_link = link + 'page'
+file_postfix = '_page_data.json'
 
 def get_page(link):
     url = link
@@ -48,24 +49,24 @@ def build_pages_links(count_of_pages, base_link):
     return pages_links
 
 def save_page(page, sequence):
-    file_name = 'page_data/' + str(sequence) + '_page_data.json'
+    file_name = 'page_data/' + str(sequence)+file_postfix
     if exists(file_name):
         exist_question = 'y'
         exist_question = input('File is exist, continue download y/n: ')
         if exist_question == 'y':
             with open(file_name, 'w') as f:
                 f.write(json.dumps(page))
-                logger.info(f'{sequence}_page_data.json page saved')
+                logger.info(f'{sequence}{file_postfix} page saved')
         elif exist_question == 'n':
             return False
     else:
         with open(file_name, 'w') as f:
                 f.write(json.dumps(page))
-                logger.info(f'{sequence}_page_data.json page saved')
+                logger.info(f'{sequence}{file_postfix} page saved')
 
 
 def read_page(sequence, file_postfix):
-    with open(f'{sequence}{file_postfix}') as f:
+    with open('page_data/' + f'{sequence}{file_postfix}') as f:
         page_data = json.loads(f.read())
     return page_data
 
@@ -85,6 +86,11 @@ for el in range(int(count_of_pages)):
     save_process = save_page(page, sequence)
     if save_process == False:
         break
+
+for el in range(int(count_of_pages)):
+    sequence = el + 1
+    page = read_page(sequence, file_postfix)
+    print(page)
 
 
 
